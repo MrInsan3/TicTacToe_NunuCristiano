@@ -12,6 +12,8 @@ window.title("Tic Tac Toe")
 difficulty = StringVar(window)
 difficulty.set("random")
 
+scores = {"x": 0, "o": 0, "draw": 0}
+
 game_btns = [[0, 0, 0],
              [0, 0, 0],
              [0, 0, 0]]
@@ -57,6 +59,20 @@ def end_game():
         player = human_player
         label.config(text="Your turn")
     else :
+        if result == True:
+            winner = "o" if player == ai_player else "x"
+            scores[winner] += 1
+            label.config(text=f"{winner.upper()} wins!")
+        else:
+            scores["draw"] += 1
+            label.config(text="Tie!")
+
+        update_score()
+
+def update_score():
+    score_label.config(
+        text=f"X: {scores['x']}   O: {scores['o']}   Draws: {scores['draw']}"
+    )
 
 def ai_random_move():
     empty = []
@@ -96,6 +112,9 @@ def reset_game():
 
 label = Label(window, text="Your turn", font=("consolas", 30))
 label.pack()
+
+score_label = Label(window, text="X: 0   O: 0   Draws: 0", font=("consolas", 20))
+score_label.pack()
 
 frame = Frame(window)
 frame.pack()
