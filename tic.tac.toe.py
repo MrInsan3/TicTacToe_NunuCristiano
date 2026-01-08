@@ -1,7 +1,12 @@
+from tkinter import *
+
 players = ["x", "o"]
 human_player = "x"
 ai_player = "o"
 player = human_player
+
+window = Tk()
+window.title("Tic Tac Toe")
 
 game_btns = [[0, 0, 0],
              [0, 0, 0],
@@ -16,6 +21,7 @@ def next_turn(row, col):
 
         if check_winner() == False:
             player = ai_player
+            label.config(text="AI turn")
 
         else:
             end_game()
@@ -39,4 +45,32 @@ def check_winner():
                 return False
     return 'tie'
 
+def reset_game():
+    global player, ai_turn_count
+    ai_turn_count = 0
+    player = human_player
+    label.config(text="Your turn")
+    for r in range(3):
+        for c in range(3):
+            game_btns[r][c].config(text="", bg="#F0F0F0")
 
+
+label = Label(window, text="Your turn", font=("consolas", 30))
+label.pack()
+
+frame = Frame(window)
+frame.pack()
+
+for r in range(3):
+    for c in range(3):
+        game_btns[r][c] = Button(
+            frame, text="", font=("consolas", 40),
+            width=4, height=1,
+            command=lambda r=r, c=c: next_turn(r, c)
+        )
+        game_btns[r][c].grid(row=r, column=c)
+
+
+Button(window, text="Restart Round", font=("consolas", 20), command=reset_game).pack()
+
+window.mainloop()
