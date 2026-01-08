@@ -1,4 +1,5 @@
 from tkinter import *
+import random
 
 players = ["x", "o"]
 human_player = "x"
@@ -8,10 +9,14 @@ player = human_player
 window = Tk()
 window.title("Tic Tac Toe")
 
+difficulty = StringVar(window)
+difficulty.set("random")
+
 game_btns = [[0, 0, 0],
              [0, 0, 0],
              [0, 0, 0]]
 
+ai_turn_count = 0
 
 def next_turn(row, col):
     global player
@@ -22,10 +27,44 @@ def next_turn(row, col):
         if check_winner() == False:
             player = ai_player
             label.config(text="AI turn")
+            window.after(300, ai_move)
 
         else:
             end_game()
 
+def ai_move():
+    global player, ai_turn_count
+    ai_turn_count += 1
+
+    if difficulty.get() == "random":
+        move = ai_random_move()
+    elif difficulty.get() == "best":
+        move = ai_best_move()
+    else:
+        move = ai_best_move() if ai_turn_count % 2 == 0 else ai_random_move()
+
+    if move:
+        r, c = move
+        game_btns[r][c]['text'] = ai_player
+
+    end_game()
+
+def end_game():
+    global player
+    result = check_winner()
+
+    if result == False:
+        player = human_player
+        label.config(text="Your turn")
+    else :
+
+def ai_random_move():
+    empty = []
+    for r in range(3):
+        for c in range(3):
+            if game_btns[r][c]['text'] == "":
+                empty.append((r, c))
+    return random.choice(empty) if empty else None        
 
 def check_winner():
     for i in range(3):
@@ -70,6 +109,12 @@ for r in range(3):
         )
         game_btns[r][c].grid(row=r, column=c)
 
+controls = Frame(window)
+controls.pack()
+
+Radiobutton(controls, text="Random", variable=difficulty, value="random").pack(side=LEFT)
+Radiobutton(controls, text="Alternate", variable=difficulty, value="alternate").pack(side=LEFT)
+Radiobutton(controls, text="Best", variable=difficulty, value="best").pack(side=LEFT)
 
 Button(window, text="Restart Round", font=("consolas", 20), command=reset_game).pack()
 
